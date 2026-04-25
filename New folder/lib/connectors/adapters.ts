@@ -183,7 +183,7 @@ function buildSnowflakeAdapter(): ConnectorAdapterDefinition {
             summary: "Warehouse load history can be inspected for queueing, overload, and concurrency pressure.",
             evidence: [
               "Queueing and overload can explain stale models and dashboards without obvious query failures.",
-              "Warehouse pressure is a common hidden cause during demos with concurrent workloads.",
+              "Warehouse pressure is a common hidden cause during high-concurrency workloads.",
             ],
           },
           {
@@ -311,7 +311,7 @@ function buildSnowflakeAdapter(): ConnectorAdapterDefinition {
           evidence: [
             `Target account: ${target}`,
             "Use information schema and ACCOUNT_USAGE surfaces for counts, freshness, and incident correlation.",
-            "Good demo-safe queries include table inventory, row counts, task failures, copy history, and warehouse load pressure.",
+            "Recommended read-only queries include table inventory, row counts, task failures, copy history, and warehouse load pressure.",
           ],
         };
       }
@@ -351,7 +351,7 @@ function buildSnowflakeAdapter(): ConnectorAdapterDefinition {
         evidence: [
           `Connection target: ${target}`,
           "Diagnostics remain read-only in this release.",
-          "Snowflake is the deepest live connector in this workspace for demo purposes.",
+          "Snowflake is the deepest live connector in this workspace.",
         ],
       };
     },
@@ -629,7 +629,7 @@ function buildLookerAdapter(): ConnectorAdapterDefinition {
             count: 1,
             summary: "Content validation can be inspected for broken fields, explores, and dashboard elements.",
             evidence: [
-              "Content validation is one of the strongest semantic-layer signals for demos.",
+              "Content validation is one of the strongest semantic-layer signals for BI diagnostics.",
               "Broken content often explains BI incidents before upstream systems are at fault.",
             ],
           },
@@ -722,7 +722,7 @@ function buildLookerAdapter(): ConnectorAdapterDefinition {
           summary: "Prepared read-only Looker inspection shell.",
           evidence: [
             `Looker host: ${baseUrl}`,
-            "Good demo-safe reads include dashboards, content validation, scheduled plans, folders, explores, and query-task metadata.",
+            "Recommended read-only surfaces include dashboards, content validation, scheduled plans, folders, explores, and query-task metadata.",
             "Use these surfaces to separate semantic-layer failures from upstream freshness problems.",
           ],
         };
@@ -911,7 +911,7 @@ function buildDatabricksAdapter(): ConnectorAdapterDefinition {
             count: 9,
             summary: "Notebook and repo references can be inspected for path drift and changed assets.",
             evidence: [
-              "Changed notebook paths and repo drift are common demo-breaking causes.",
+              "Changed notebook paths and repo drift are common sources of pipeline breakage.",
               "Notebook lineage helps map job failures to downstream tables and dashboards.",
             ],
           },
@@ -982,7 +982,7 @@ function buildDatabricksAdapter(): ConnectorAdapterDefinition {
           summary: "Prepared read-only Databricks inspection shell.",
           evidence: [
             `Workspace: ${host}`,
-            "Good demo-safe reads include jobs, runs, clusters, SQL warehouses, workspace assets, and run-output APIs.",
+            "Recommended read-only surfaces include jobs, runs, clusters, SQL warehouses, workspace assets, and run-output APIs.",
             "Use these surfaces to separate cluster/runtime issues from notebook logic or upstream data issues.",
           ],
         };
@@ -1720,7 +1720,7 @@ function buildSupersetAdapter(): ConnectorAdapterDefinition {
           summary: "Prepared read-only Superset inspection shell.",
           evidence: [
             `Superset host: ${baseUrl}`,
-            "Good demo-safe reads include dashboards, charts, datasets, databases, audit logs, and recent activity.",
+            "Recommended read-only surfaces include dashboards, charts, datasets, databases, audit logs, and recent activity.",
             "Use these surfaces to separate BI-layer issues from upstream warehouse freshness and auth issues.",
           ],
         };
