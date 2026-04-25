@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pygmy — Architecture</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b0d17;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: #fff; margin-bottom: 2px; }
+    .sub { font-size: 10px; color: #334155; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 36px; }
+
+    .diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* layer row */
+    .layer {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .layer-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      min-width: 68px;
+    }
+
+    .layer-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .chip {
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 10.5px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* arrow */
+    .arrow {
+      height: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, #1e293b, #6366f1);
+      position: relative;
+      align-self: center;
+    }
+    .arrow::after {
+      content: "";
+      position: absolute;
+      bottom: -5px; left: 50%;
+      transform: translateX(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid #6366f1;
+    }
+
+    /* themes */
+    .t-indigo  { background: rgba(99,102,241,0.07);  border-color: rgba(99,102,241,0.25);  }
+    .t-indigo  .layer-label { color: #818cf8; }
+
+    .t-violet  { background: rgba(139,92,246,0.07);  border-color: rgba(139,92,246,0.25);  }
+    .t-violet  .layer-label { color: #a78bfa; }
+
+    .t-cyan    { background: rgba(6,182,212,0.07);   border-color: rgba(6,182,212,0.25);   }
+    .t-cyan    .layer-label { color: #22d3ee; }
+
+    .t-emerald { background: rgba(16,185,129,0.07);  border-color: rgba(16,185,129,0.25);  }
+    .t-emerald .layer-label { color: #34d399; }
+
+    .t-slate   { background: rgba(30,41,59,0.6);     border-color: rgba(71,85,105,0.3);    }
+    .t-slate   .layer-label { color: #64748b; }
+  </style>
+</head>
+<body>
+
+  <h1>Pygmy</h1>
+  <p class="sub">High-Level Architecture</p>
+
+  <div class="diagram">
+
+    <div class="layer t-indigo">
+      <span class="layer-label">Frontend</span>
+      <div class="layer-chips">
+        <span class="chip">Connections</span>
+        <span class="chip">Overview</span>
+        <span class="chip">Rules</span>
+        <span class="chip">Alerts</span>
+        <span class="chip">Assistant</span>
+        <span class="chip">Settings</span>
+      </div>
+    </div>
+
+    <div style="height:20px;width:2px;background:linear-gradient(to bottom,rgba(99,102,241,0.3),rgba(99,102,241,0.8));position:relative;align-self:center;">
+      <span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #6366f1;"></span>
+    </div>
+
+    <div class="layer t-violet">
+      <span class="layer-label">API Layer</span>
+      <div class="layer-chips">
+        <span class="chip">agent/chat</span>
+        <span class="chip">quality/rules</span>
+        <span class="chip">connections</span>
+        <span class="chip">execute</span>
+        <span class="chip">knowledge</span>
+        <span class="chip">pipeline/identify</span>
+      </div>
+    </div>
+
+    <div style="height:20px;width:2px;background:linear-gradient(to bottom,rgba(139,92,246,0.3),rgba(6,182,212,0.8));position:relative;align-self:center;">
+      <span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #06b6d4;"></span>
+    </div>
+
+    <div class="layer t-cyan">
+      <span class="layer-label">Agent Engine</span>
+      <div class="layer-chips">
+        <span class="chip">Role Classifier</span>
+        <span class="chip">Knowledge Retrieval</span>
+        <span class="chip">Command Planner</span>
+        <span class="chip">Red-Herring Detector</span>
+        <span class="chip">pipeline-qwen-sft (Qwen 70B Instruct)</span>
+        <span class="chip">llama3.2:1b</span>
+      </div>
+    </div>
+
+    <div style="height:20px;width:2px;background:linear-gradient(to bottom,rgba(6,182,212,0.3),rgba(16,185,129,0.8));position:relative;align-self:center;">
+      <span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #10b981;"></span>
+    </div>
+
+    <div class="layer t-emerald">
+      <span class="layer-label">Quality Engine</span>
+      <div class="layer-chips">
+        <span class="chip">System Tests</span>
+        <span class="chip">Live Connector</span>
+        <span class="chip">QA Agent</span>
+        <span class="chip">Log Monitor</span>
+        <span class="chip">Watchdog</span>
+      </div>
+    </div>
+
+    <div style="height:20px;width:2px;background:linear-gradient(to bottom,rgba(16,185,129,0.3),rgba(71,85,105,0.8));position:relative;align-self:center;">
+      <span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #475569;"></span>
+    </div>
+
+    <div class="layer t-slate">
+      <span class="layer-label">Persistence</span>
+      <div class="layer-chips">
+        <span class="chip">Local JSON</span>
+        <span class="chip">MongoDB Atlas</span>
+        <span class="chip">Qdrant Cloud</span>
+      </div>
+    </div>
+
+    <div style="height:20px;width:2px;background:linear-gradient(to bottom,rgba(71,85,105,0.3),rgba(71,85,105,0.6));position:relative;align-self:center;">
+      <span style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #475569;"></span>
+    </div>
+
+    <div class="layer t-slate">
+      <span class="layer-label">Connectors</span>
+      <div class="layer-chips">
+        <span class="chip">Snowflake</span>
+        <span class="chip">dbt</span>
+        <span class="chip">Looker</span>
+        <span class="chip">Airflow</span>
+        <span class="chip">Fivetran</span>
+        <span class="chip">Kafka</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">S3 / GCS</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

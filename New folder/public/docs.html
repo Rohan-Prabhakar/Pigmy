@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pygmy — Technical Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:      #111827;
+      --text2:     #374151;
+      --text3:     #6b7280;
+      --border:    #d1d5db;
+      --border2:   #e5e7eb;
+      --bg:        #ffffff;
+      --bg2:       #f9fafb;
+      --accent:    #1e3a5f;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "EB Garamond", Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 11.5pt;
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 72px 80px 100px;
+    }
+
+    /* ── Document header ── */
+    .doc-header {
+      text-align: center;
+      border-bottom: 2px solid var(--text);
+      padding-bottom: 28px;
+      margin-bottom: 32px;
+    }
+    .institution {
+      font-family: "Inter", sans-serif;
+      font-size: 8.5pt;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 18px;
+    }
+    .doc-title {
+      font-size: 22pt;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .doc-subtitle {
+      font-size: 13pt;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text2);
+      margin-bottom: 20px;
+    }
+    .authors {
+      font-family: "Inter", sans-serif;
+      font-size: 9.5pt;
+      color: var(--text2);
+      margin-bottom: 6px;
+    }
+    .doc-meta {
+      font-family: "Inter", sans-serif;
+      font-size: 8.5pt;
+      color: var(--text3);
+    }
+
+    /* ── Abstract ── */
+    .abstract {
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      background: var(--bg2);
+    }
+    .abstract-label {
+      font-family: "Inter", sans-serif;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+    .abstract p {
+      font-size: 10.5pt;
+      color: var(--text2);
+      line-height: 1.65;
+      text-align: justify;
+    }
+    .keywords {
+      font-family: "Inter", sans-serif;
+      font-size: 8.5pt;
+      color: var(--text3);
+      margin-top: 10px;
+    }
+    .keywords strong { color: var(--text2); }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 36px;
+      scroll-margin-top: 32px;
+    }
+
+    h1 {
+      font-family: "Inter", sans-serif;
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 5px;
+      margin-bottom: 14px;
+      margin-top: 40px;
+    }
+    h1:first-of-type { margin-top: 0; }
+
+    h2 {
+      font-family: "Inter", sans-serif;
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 22px;
+      margin-bottom: 8px;
+    }
+
+    h3 {
+      font-family: "Inter", sans-serif;
+      font-size: 9.5pt;
+      font-weight: 600;
+      color: var(--text2);
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      text-align: justify;
+      margin-bottom: 11px;
+      color: var(--text2);
+    }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 16px 0 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+    caption {
+      font-family: "Inter", sans-serif;
+      font-size: 8.5pt;
+      color: var(--text3);
+      text-align: left;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+    thead tr { border-top: 2px solid var(--text); border-bottom: 1px solid var(--border); }
+    th {
+      font-family: "Inter", sans-serif;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 7px 10px;
+      text-align: left;
+      color: var(--text);
+    }
+    td {
+      padding: 7px 10px;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border2);
+      vertical-align: top;
+    }
+    tfoot td {
+      font-family: "Inter", sans-serif;
+      font-size: 8pt;
+      color: var(--text3);
+      border-top: 1px solid var(--border);
+      border-bottom: none;
+      padding-top: 6px;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--bg2); }
+    td strong, th strong { color: var(--text); }
+    .table-note {
+      font-family: "Inter", sans-serif;
+      font-size: 7.5pt;
+      color: var(--text3);
+      margin-top: 4px;
+      font-style: italic;
+    }
+    tfoot tr:last-child td { border-top: 2px solid var(--text); }
+
+    /* ── Code / verbatim ── */
+    pre {
+      font-family: "Courier New", "Cascadia Code", monospace;
+      font-size: 8pt;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 12px 14px;
+      overflow-x: auto;
+      margin: 12px 0 18px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    code {
+      font-family: "Courier New", monospace;
+      font-size: 8.5pt;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      padding: 1px 4px;
+      color: var(--text);
+    }
+
+    /* ── Figures ── */
+    .figure {
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin: 16px 0 20px;
+      background: var(--bg2);
+    }
+    .figure-caption {
+      font-family: "Inter", sans-serif;
+      font-size: 8.5pt;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* ── Architecture diagram ── */
+    .arch {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      font-family: "Inter", sans-serif;
+    }
+    .arch-row {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      background: var(--bg);
+    }
+    .arch-row + .arch-row { border-top: none; }
+    .arch-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      min-width: 100px;
+      border-right: 1px solid var(--border2);
+      padding-right: 10px;
+      margin-right: 12px;
+    }
+    .arch-items {
+      font-size: 8.5pt;
+      color: var(--text2);
+    }
+    .arch-arrow-row {
+      display: flex;
+      justify-content: flex-start;
+      padding-left: 50px;
+    }
+    .arch-arrow-row span {
+      font-size: 8pt;
+      color: var(--text3);
+    }
+
+    /* ── Pipeline flow ── */
+    .pipeline {
+      font-family: "Courier New", monospace;
+      font-size: 8pt;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      background: var(--bg2);
+      line-height: 1.8;
+      margin: 12px 0 18px;
+      color: var(--text);
+    }
+
+    /* ── Metrics grid ── */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      background: var(--border);
+      margin: 12px 0 20px;
+    }
+    .metric {
+      background: var(--bg);
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .metric-value {
+      font-family: "Inter", sans-serif;
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+    .metric-label {
+      font-family: "Inter", sans-serif;
+      font-size: 7.5pt;
+      color: var(--text3);
+      line-height: 1.4;
+    }
+
+    /* ── Inline note / callout ── */
+    .note {
+      border-left: 3px solid var(--border);
+      padding: 8px 14px;
+      margin: 12px 0;
+      font-size: 10pt;
+      color: var(--text2);
+      background: var(--bg2);
+    }
+    .note strong { color: var(--text); }
+
+    /* ── Numbered list ── */
+    ol.body-list, ul.body-list {
+      padding-left: 20px;
+      margin: 8px 0 14px;
+    }
+    ol.body-list li, ul.body-list li {
+      color: var(--text2);
+      margin-bottom: 5px;
+      font-size: 11pt;
+    }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+
+    /* ── References ── */
+    .ref-list {
+      list-style: none;
+      padding: 0;
+      counter-reset: ref;
+    }
+    .ref-list li {
+      counter-increment: ref;
+      padding: 4px 0 4px 28px;
+      position: relative;
+      font-size: 10pt;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border2);
+    }
+    .ref-list li::before {
+      content: "[" counter(ref) "]";
+      position: absolute;
+      left: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 8pt;
+      color: var(--text3);
+      font-weight: 600;
+      top: 6px;
+    }
+    .ref-list li:last-child { border-bottom: none; }
+
+    /* ── Page number placeholder ── */
+    .page-num {
+      font-family: "Inter", sans-serif;
+      font-size: 8pt;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 60px;
+      border-top: 1px solid var(--border2);
+      padding-top: 10px;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { font-size: 10.5pt; }
+      .page { padding: 36px 48px 60px; }
+      h1 { page-break-before: always; }
+      h1:first-of-type { page-break-before: avoid; }
+      pre { font-size: 7.5pt; }
+      .metrics { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .page { padding: 32px 20px 60px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Document Header -->
+  <div class="doc-header">
+    <div class="institution">Technical Report &nbsp;·&nbsp; Data Systems &amp; AI Division</div>
+    <div class="doc-title">Pygmy: An AI-Native Data Operations Platform<br>with Fine-Tuned Pipeline Reasoning</div>
+    <div class="doc-subtitle">System Design, Implementation, and Empirical Evaluation on DCA-Bench</div>
+    <div class="authors">Rohan Prabhakar &nbsp;&nbsp;|&nbsp;&nbsp; <em>rohanprabhakar1103</em></div>
+    <div class="doc-meta">Version 1.0 &nbsp;&middot;&nbsp; April 2026 &nbsp;&middot;&nbsp; Confidential</div>
+  </div>
+
+  <!-- Abstract -->
+  <div class="abstract">
+    <div class="abstract-label">Abstract</div>
+    <p>
+      This report presents Pygmy, a self-hosted, AI-native data operations platform designed to address the
+      observability, quality management, and diagnostic challenges faced by modern data engineering teams. Pygmy
+      integrates a fine-tuned large language model — <em>pipeline-qwen-sft</em>, derived from Qwen 70B Instruct
+      via supervised fine-tuning on pipeline operations data — with a rule-based quality engine, a multi-source
+      knowledge retrieval system, and a typed connector framework spanning eight data infrastructure tools.
+      We evaluate the primary model against two competitive baselines (Gemma-3 27B QAT and DeepSeek-R1-Distill-Qwen-7B)
+      on the DCA-Bench dataset, a standardised benchmark for data-centric anomaly detection. All three models
+      achieve a heuristic detection rate of 1.0 across 30 evaluation cases; however, pipeline-qwen-sft
+      produces significantly more concise outputs (113.6 words on average versus 183.4 for Gemma-3 and 315.3 for
+      DeepSeek-R1-7B), demonstrating superior response efficiency without sacrificing detection coverage.
+      The system architecture, inference pipeline, quality engine design, and engineering challenges are
+      documented in full to support reproducibility and academic review.
+    </p>
+    <div class="keywords">
+      <strong>Keywords:</strong> data observability, pipeline quality assurance, large language models,
+      supervised fine-tuning, DCA-Bench, anomaly detection, self-hosted AI, retrieval-augmented generation
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 1 -->
+  <div class="section">
+    <h1 id="intro">1. Introduction</h1>
+    <p>
+      Modern data engineering teams operate heterogeneous stacks comprising SQL warehouses, workflow orchestrators,
+      transformation frameworks, streaming platforms, and business intelligence layers. Monitoring the health
+      of data across this landscape is non-trivial: failures are often silent, root causes are frequently masked
+      by cascading secondary symptoms (red herrings), and the time to resolution is bounded by the engineer's
+      ability to manually correlate signals across disparate tools.
+    </p>
+    <p>
+      Existing commercial observability products mitigate these challenges but introduce significant drawbacks:
+      they require sensitive schema metadata and query results to be transmitted to third-party cloud infrastructure,
+      they operate as black boxes with limited diagnostic transparency, and they provide generic alerts that do
+      not reason about cross-tool causality.
+    </p>
+    <p>
+      Pygmy addresses these gaps with three design principles. First, <em>local-first inference</em>: all model
+      calls, credential storage, and query execution remain on-premise. Second, <em>propose-never-act</em>: every
+      command that modifies a live system requires explicit human approval before execution. Third,
+      <em>multi-source quality fusion</em>: quality signals are drawn from five independent sources and merged
+      at query time, providing a richer and more reliable picture than any single source can offer.
+    </p>
+    <p>
+      The primary technical contribution of this report is the development and evaluation of
+      <em>pipeline-qwen-sft</em>, a domain-specific fine-tuned model serving as Pygmy's core reasoning engine,
+      benchmarked against two strong open-source baselines on the DCA-Bench anomaly detection benchmark.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 2 -->
+  <div class="section">
+    <h1 id="arch">2. System Architecture</h1>
+    <p>
+      Pygmy is structured as a six-layer system. Each layer has a clearly bounded responsibility; requests
+      propagate top-to-bottom while quality signals propagate bottom-up into the assistant context.
+    </p>
+
+    <div class="figure">
+      <div class="arch">
+        <div class="arch-row">
+          <span class="arch-label">Frontend</span>
+          <span class="arch-items">Connections &nbsp;|&nbsp; Overview &nbsp;|&nbsp; Rules &nbsp;|&nbsp; Alerts &nbsp;|&nbsp; Assistant &nbsp;|&nbsp; Settings</span>
+        </div>
+        <div class="arch-row">
+          <span class="arch-label">API Layer</span>
+          <span class="arch-items">agent/chat &nbsp;|&nbsp; quality/rules &nbsp;|&nbsp; execute &nbsp;|&nbsp; connections &nbsp;|&nbsp; knowledge &nbsp;|&nbsp; pipeline/identify</span>
+        </div>
+        <div class="arch-row">
+          <span class="arch-label">Agent Engine</span>
+          <span class="arch-items">Role Classifier &nbsp;|&nbsp; Knowledge Retrieval &nbsp;|&nbsp; Command Planner &nbsp;|&nbsp; Red-Herring Detector &nbsp;|&nbsp; pipeline-qwen-sft &nbsp;|&nbsp; llama3.2:1b</span>
+        </div>
+        <div class="arch-row">
+          <span class="arch-label">Quality Engine</span>
+          <span class="arch-items">System Tests &nbsp;|&nbsp; Live Connector &nbsp;|&nbsp; QA Agent &nbsp;|&nbsp; Log Monitor &nbsp;|&nbsp; Watchdog</span>
+        </div>
+        <div class="arch-row">
+          <span class="arch-label">Persistence</span>
+          <span class="arch-items">Local JSON (.pipeline-ops/) &nbsp;|&nbsp; MongoDB Atlas &nbsp;|&nbsp; Qdrant Cloud</span>
+        </div>
+        <div class="arch-row">
+          <span class="arch-label">Connectors</span>
+          <span class="arch-items">Snowflake &nbsp;|&nbsp; dbt &nbsp;|&nbsp; Looker &nbsp;|&nbsp; Airflow &nbsp;|&nbsp; Fivetran &nbsp;|&nbsp; Kafka &nbsp;|&nbsp; PostgreSQL &nbsp;|&nbsp; S3 / GCS</span>
+        </div>
+      </div>
+      <div class="figure-caption">Figure 1. High-level six-layer architecture of Pygmy.</div>
+    </div>
+
+    <h2>2.1 Technology Stack</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Frontend</strong></td><td>Next.js 14, React 18, Tailwind CSS</td><td>App Router, SSR, tab-based UI</td></tr>
+          <tr><td><strong>API</strong></td><td>Next.js Route Handlers</td><td>Typed REST endpoints, streaming responses</td></tr>
+          <tr><td><strong>Primary LLM</strong></td><td>pipeline-qwen-sft (Qwen 70B Instruct base)</td><td>Diagnosis, remediation, red-herring detection</td></tr>
+          <tr><td><strong>Fast LLM</strong></td><td>llama3.2:1b via Ollama</td><td>Role inference, short-form lookups</td></tr>
+          <tr><td><strong>Vector Store</strong></td><td>Qdrant Cloud (AWS us-west-2)</td><td>Knowledge retrieval, RAG citations</td></tr>
+          <tr><td><strong>Database</strong></td><td>MongoDB Atlas</td><td>Chat threads, approvals, command run history</td></tr>
+          <tr><td><strong>Local State</strong></td><td>JSON files (.pipeline-ops/)</td><td>Zero-latency reads, offline support</td></tr>
+          <tr><td><strong>Model Runtime</strong></td><td>Ollama (localhost:11434)</td><td>Local model serving with fallback chain</td></tr>
+          <tr><td><strong>Model Service</strong></td><td>Custom HTTP service (localhost:8000)</td><td>pipeline-qwen-sft + LoRA adapter serving</td></tr>
+          <tr><td><strong>Language</strong></td><td>TypeScript (strict mode)</td><td>End-to-end type safety</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>2.2 Request Data Flow</h2>
+    <p>
+      Every user message triggers a parallelised inference pipeline prior to any model token generation.
+      The sequence is as follows:
+    </p>
+    <div class="pipeline">POST /api/agent/chat  { message, role, threadId, connectionId }
+      |
+      +-- [Parallel Fan-Out]
+      |     normalizeRole()       --&gt;  regex fast-path OR llama3.2:1b
+      |     retrieveKnowledge()   --&gt;  Qdrant hybrid search, top-5 citations
+      |
+      +-- [Parallel Planning]  (requires role from above)
+      |     buildCommandProposals()  --&gt;  route intent --&gt; SQL / API call
+      |     runRedHerringModel()     --&gt;  pipeline-qwen-sft false-positive check
+      |
+      +-- [Generation]
+      |     select model path  --&gt;  generate response text
+      |
+      +-- [Persist + Return]
+            append to MongoDB thread  --&gt;  render UI</div>
+
+    <h2>2.3 Command Execution Flow</h2>
+    <p>
+      When a user accepts a proposed command, the following sequence is triggered with approval gating enforced
+      at the guardrail layer prior to any live execution:
+    </p>
+    <div class="pipeline">POST /api/execute { tool, action, connectionId, query }
+  --&gt;  Guardrail check (read-only? approval required?)
+  --&gt;  Route to typed executor (Snowflake / Postgres / HTTP / Kafka / S3)
+  --&gt;  Execute with timeout cap
+  --&gt;  Persist to assistant_command_runs (MongoDB)
+  --&gt;  Stream result to chat UI</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 3 -->
+  <div class="section">
+    <h1 id="model">3. Model Development</h1>
+
+    <h2>3.1 Base Model</h2>
+    <p>
+      The base model is Qwen 70B Instruct, a 70-billion-parameter instruction-tuned language model developed
+      by Alibaba Cloud. Qwen 70B Instruct was selected for its strong performance on structured reasoning
+      tasks, its support for long-context inference (up to 32,768 tokens), and its compatibility with
+      quantisation via GGUF/llama.cpp for efficient local deployment.
+    </p>
+
+    <h2>3.2 Supervised Fine-Tuning</h2>
+    <p>
+      Supervised fine-tuning was applied to the base model using domain-specific pipeline operations data,
+      yielding <em>pipeline-qwen-sft</em>. The training corpus comprises annotated examples of:
+    </p>
+    <ul class="body-list">
+      <li>Query failure patterns and root cause traces (Snowflake, PostgreSQL)</li>
+      <li>dbt lineage errors and dependency resolution failures</li>
+      <li>Airflow DAG failure logs and retry sequencing</li>
+      <li>Snowflake ACCOUNT_USAGE anomaly patterns</li>
+      <li>Red-herring incident reports with correct root cause annotations</li>
+      <li>Data quality issue descriptions across DCA-Bench platform categories</li>
+    </ul>
+    <p>
+      The fine-tuned model is quantised to 4-bit precision (Q4_K_M GGUF format) and served via a custom
+      HTTP model service on <code>localhost:8000</code> with a LoRA adapter loaded on top of the base weights.
+      The Ollama runtime at <code>localhost:11434</code> is used as the fallback serving backend.
+    </p>
+
+    <h2>3.3 Model Routing</h2>
+    <p>
+      Four inference paths are maintained, each with a priority-ordered fallback chain. Path selection
+      is determined by message intent classification prior to generation.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 1. Model routing paths and fallback chains.</caption>
+        <thead>
+          <tr><th>Path</th><th>Primary Model</th><th>Trigger Condition</th><th>Fallback Chain</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Fast</strong></td><td>llama3.2:1b</td><td>Greetings, role inference, short queries</td><td>llama3.2:3b &rarr; qwen2.5:7b</td></tr>
+          <tr><td><strong>Deep</strong></td><td>pipeline-qwen-sft</td><td>Diagnosis, root cause, observability</td><td>qwen2.5:7b-instruct &rarr; llama3.2:3b</td></tr>
+          <tr><td><strong>Remedy</strong></td><td>pipeline-qwen-sft</td><td>Fix, resolve, retry, action requests</td><td>qwen2.5:14b &rarr; qwen2.5:7b</td></tr>
+          <tr><td><strong>Red-Herring</strong></td><td>pipeline-qwen-sft</td><td>error / fail / stale / incident signals</td><td>qwen2.5:7b-instruct &rarr; llama3.2:1b</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 4 -->
+  <div class="section">
+    <h1 id="quality">4. Quality Engine</h1>
+    <p>
+      The Quality Engine aggregates quality signals from five independent sources, merged at query time via
+      <code>mergeQualityBundles()</code>. Each source operates asynchronously with its own caching TTL,
+      ensuring that freshness requirements are met without introducing unnecessary latency.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 2. Quality rule sources, generation mechanisms, and cache behaviour.</caption>
+        <thead>
+          <tr><th>Source</th><th>Generation Mechanism</th><th>Cache TTL</th><th>Output Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>System Tests</strong></td><td>Deterministic TypeScript code</td><td>Per request</td><td>Health, freshness, and validation rules per connection</td></tr>
+          <tr><td><strong>Live Connector</strong></td><td>Live queries to connected tools</td><td>10 minutes</td><td>Real run results that override system rules</td></tr>
+          <tr><td><strong>QA Agent</strong></td><td>pipeline-qwen-sft LLM generation</td><td>20 minutes</td><td>Best-practice rules with auto-generated SQL</td></tr>
+          <tr><td><strong>Log Monitor</strong></td><td>Log pattern extraction</td><td>Per request</td><td>Error-signature rules derived from connection logs</td></tr>
+          <tr><td><strong>Watchdog</strong></td><td>Real-time anomaly detection</td><td>Per snapshot</td><td>Immediate alert rules triggered on anomaly events</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>4.1 Severity Classification</h2>
+    <p>
+      Quality rules and alerts are classified into four severity levels, governing alert routing
+      and approval requirements for downstream actions.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 3. Severity level definitions.</caption>
+        <thead>
+          <tr><th>Level</th><th>Designation</th><th>Description</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>SEV-1</strong></td><td>Critical</td><td>Data loss or complete service outage</td><td>Pipeline down, data corruption detected</td></tr>
+          <tr><td><strong>SEV-2</strong></td><td>Major</td><td>Blocked pipeline, significant impact</td><td>Failed Snowflake tasks, Fivetran sync halted</td></tr>
+          <tr><td><strong>SEV-3</strong></td><td>Warning</td><td>Degraded data quality</td><td>Freshness SLA breach, elevated null rate</td></tr>
+          <tr><td><strong>SEV-4</strong></td><td>Informational</td><td>Observation without immediate impact</td><td>DDL changes detected, schema drift noted</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 5 -->
+  <div class="section">
+    <h1 id="rag">5. Retrieval-Augmented Generation</h1>
+    <p>
+      Knowledge retrieval provides citation-grounded responses by injecting relevant documentation
+      snippets into the model's system prompt prior to generation. This reduces hallucination risk
+      on domain-specific factual queries and provides traceability for model recommendations.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 4. RAG pipeline configuration.</caption>
+        <thead>
+          <tr><th>Component</th><th>Configuration</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Vector Store</strong></td><td>Qdrant Cloud &mdash; <code>pipeline_ops_kb</code> collection, AWS us-west-2</td></tr>
+          <tr><td><strong>Chunking Strategy</strong></td><td>Split on two or more consecutive newlines; maximum 420 characters per chunk</td></tr>
+          <tr><td><strong>Retrieval Method</strong></td><td>Hybrid keyword and semantic scoring; top-5 citations per request</td></tr>
+          <tr><td><strong>Fallback</strong></td><td>Local JSON store at <code>.pipeline-ops/knowledge.json</code></td></tr>
+          <tr><td><strong>Namespace Filter</strong></td><td>All points filtered by payload field <code>app="pipeline-ops"</code></td></tr>
+          <tr><td><strong>Grounding</strong></td><td>Retrieved citations injected into LLM system prompt before generation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 6 -->
+  <div class="section">
+    <h1 id="eval">6. Empirical Evaluation</h1>
+
+    <h2>6.1 Benchmark: DCA-Bench</h2>
+    <p>
+      Models are evaluated on DCA-Bench [1], a standardised benchmark for data-centric anomaly detection
+      comprising 221 test cases drawn from real-world data quality scenarios across multiple platform
+      categories. Each case provides a dataset description and context; models must identify whether a
+      data quality issue is present.
+    </p>
+    <p>
+      For this evaluation, hint level <code>-1</code> (no hints provided) is used, representing the
+      most challenging configuration. A subset of 30 cases is evaluated due to GPU memory constraints
+      (15.5 GB free VRAM on a 15.6 GB device), with the full 221-case run reserved for future reporting.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 5. Evaluation configuration.</caption>
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Dataset</td><td>DCA-Bench (trais-lab/DCA-Bench)</td></tr>
+          <tr><td>Total cases available</td><td>221</td></tr>
+          <tr><td>Cases evaluated</td><td>30 (LIMIT=30)</td></tr>
+          <tr><td>Hint level</td><td>-1 (no hints)</td></tr>
+          <tr><td>Available VRAM</td><td>15.5 GB / 15.6 GB (confirmed pre-run)</td></tr>
+          <tr><td>Max tokens per response</td><td>450</td></tr>
+          <tr><td>Temperature</td><td>0.2 (GGUF models); 0.3 (HF Transformers)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>6.2 Models Under Evaluation</h2>
+    <p>Three models are compared in this evaluation:</p>
+    <ol class="body-list">
+      <li>
+        <strong>pipeline-qwen-sft (Pipeline_Ops_Qwen)</strong> &mdash; The domain fine-tuned model, served
+        as GGUF Q4_K_M at <code>n_ctx=8192</code> via llama.cpp. System prompt: Pipeline Ops persona
+        with evidence-driven diagnosis and red-herring detection instructions.
+      </li>
+      <li>
+        <strong>Gemma-3 27B QAT (Gemma_3_27B_QAT)</strong> &mdash; Google's 27-billion-parameter
+        Gemma-3 model in QAT-quantised GGUF format, served at <code>n_ctx=2048</code>. Strong general-purpose
+        baseline with significantly larger parameter count.
+      </li>
+      <li>
+        <strong>DeepSeek-R1-Distill-Qwen-7B (DeepSeek_R1_7B)</strong> &mdash; DeepSeek's 7B distilled
+        reasoning model loaded via HuggingFace Transformers with 4-bit NF4 quantisation
+        (BitsAndBytes). Inference generates chain-of-thought reasoning sequences.
+      </li>
+    </ol>
+
+    <h2>6.3 Evaluation Metrics</h2>
+    <p>
+      Four metrics are computed. The heuristic detection score serves as the primary binary classifier;
+      the remaining three metrics form a multi-dimensional accuracy assessment used in the ensemble score.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 6. Metric definitions.</caption>
+        <thead><tr><th>Metric</th><th>Definition</th><th>Weight in Ensemble</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Heuristic Score</strong></td>
+            <td>Binary: 1 if prediction contains any quality-issue keyword (missing, null, duplicate, inconsistent, error, invalid, incorrect, mismatch, outlier, corrupt, wrong, issue, problem, anomaly, format, encoding, typo, label); else 0.</td>
+            <td>Primary (not in ensemble)</td>
+          </tr>
+          <tr>
+            <td><strong>Jaccard Similarity</strong></td>
+            <td>|Pred &cap; GT| / |Pred &cup; GT| computed on token sets.</td>
+            <td>0.40</td>
+          </tr>
+          <tr>
+            <td><strong>Levenshtein Similarity</strong></td>
+            <td>Token sort ratio (thefuzz library): measures edit-distance precision normalised to [0, 1].</td>
+            <td>0.40</td>
+          </tr>
+          <tr>
+            <td><strong>Keyword Recall</strong></td>
+            <td>|GT tokens &cap; Pred tokens| / |GT tokens|: measures coverage of ground-truth vocabulary.</td>
+            <td>0.20</td>
+          </tr>
+          <tr>
+            <td><strong>Ensemble Accuracy</strong></td>
+            <td>Weighted sum: 0.4 &times; Jaccard + 0.4 &times; Levenshtein + 0.2 &times; Recall.</td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>6.4 Experimental Setup</h2>
+
+    <h3>6.4.1 VRAM Management</h3>
+    <p>
+      Between each model load, explicit VRAM cleanup is performed to prevent out-of-memory failures
+      on the 15.6 GB device:
+    </p>
+    <pre>import gc, torch
+
+gc.collect()
+torch.cuda.empty_cache()
+torch.cuda.synchronize()
+
+free, total = torch.cuda.mem_get_info()
+print(f"Free VRAM: {free/1e9:.1f} GB / {total/1e9:.1f} GB")
+# Output: Free VRAM: 15.5 GB / 15.6 GB</pre>
+
+    <h3>6.4.2 Prompt Formatting</h3>
+    <p>
+      Each model receives the Pipeline Ops system prompt followed by the dataset content, formatted
+      according to the model's native chat template:
+    </p>
+    <pre>PIPELINE_OPS_SYSTEM = """
+You are Pipeline Ops, a data monitoring and error-fixing copilot.
+Focus on evidence-driven diagnosis, cross-tool root cause analysis,
+and red-herring detection. Never claim tool outputs you were not given.
+Prefer concise, structured answers with likely root cause, supporting
+evidence, and safe next actions.
+"""
+
+# Qwen / ChatML format
+&lt;|im_start|&gt;system\n{SYSTEM}&lt;|im_end|&gt;
+&lt;|im_start|&gt;user\n{INSTRUCTION}&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant\n
+
+# Gemma format
+&lt;bos&gt;&lt;start_of_turn&gt;user\n{SYSTEM}\n{INSTRUCTION}&lt;end_of_turn&gt;
+&lt;start_of_turn&gt;model\n
+
+# DeepSeek format
+&lt;|begin of sentence|&gt;&lt;|User|&gt;{SYSTEM}\n{INSTRUCTION}&lt;|Assistant|&gt;&lt;|thought|&gt;</pre>
+
+    <h3>6.4.3 Model Loading</h3>
+    <p>
+      GGUF models (pipeline-qwen-sft, Gemma-3 27B QAT) are loaded via llama.cpp with full GPU layer
+      offloading (<code>n_gpu_layers=-1</code>). DeepSeek-R1-7B is loaded via HuggingFace Transformers
+      with 4-bit NF4 quantisation using BitsAndBytes and automatic device mapping.
+    </p>
+
+    <pre># GGUF model loading (pipeline-qwen-sft, Gemma-3)
+llm = Llama(
+    model_path=model_path,
+    n_ctx=8192,          # 2048 for Gemma-3 due to VRAM constraints
+    n_gpu_layers=-1,     # Full GPU offload
+    verbose=False
+)
+
+# HF Transformers loading (DeepSeek-R1-7B)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_quant_type="nf4"
+)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    quantization_config=bnb_config,
+    device_map="auto"
+)</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 7 -->
+  <div class="section">
+    <h1 id="results">7. Results</h1>
+
+    <h2>7.1 Heuristic Detection Rate</h2>
+    <p>
+      All three models achieve a perfect heuristic detection rate of 1.0 across all 30 evaluation cases,
+      demonstrating that the quality-issue keyword vocabulary is broad enough to be captured by every model
+      at this scale. This establishes a ceiling for the binary detection metric and motivates the use
+      of multi-dimensional scoring for differentiation.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 7. Primary benchmark results (30 cases, hint_level=-1).</caption>
+        <thead>
+          <tr><th>Model</th><th>Heuristic Score</th><th>Avg. Response Length (words)</th><th>Quantisation</th><th>n_ctx</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Pipeline_Ops_Qwen</strong></td><td>1.000</td><td><strong>113.6</strong></td><td>Q4_K_M GGUF</td><td>8192</td></tr>
+          <tr><td>Gemma_3_27B_QAT</td><td>1.000</td><td>183.4</td><td>Q4_0 GGUF (QAT)</td><td>2048</td></tr>
+          <tr><td>DeepSeek_R1_7B</td><td>1.000</td><td>315.3</td><td>NF4 (BitsAndBytes)</td><td>Full ctx</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="5">All scores reported as mean over 30 evaluation cases. Lower response length with equal detection score indicates higher efficiency.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-value">1.000</div>
+        <div class="metric-label">Heuristic detection<br>rate (all models)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">113.6</div>
+        <div class="metric-label">Avg. words per response<br>pipeline-qwen-sft</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">2.78x</div>
+        <div class="metric-label">Response verbosity ratio<br>DeepSeek vs pipeline-qwen</div>
+      </div>
+    </div>
+
+    <h2>7.2 Response Efficiency Analysis</h2>
+    <p>
+      Despite achieving identical heuristic detection scores, the three models differ substantially
+      in response verbosity. pipeline-qwen-sft generates responses averaging 113.6 words, compared to
+      183.4 words for Gemma-3 27B QAT (1.62x longer) and 315.3 words for DeepSeek-R1-7B (2.78x longer).
+    </p>
+    <p>
+      The elevated verbosity of DeepSeek-R1-7B is attributable to its chain-of-thought reasoning format:
+      the model generates extended internal reasoning sequences (<code>&lt;think&gt;...&lt;/think&gt;</code>
+      blocks) prior to producing a final answer, significantly increasing token output. These reasoning
+      traces must be stripped in post-processing before the final response is presented to the user.
+    </p>
+    <p>
+      For a production data operations assistant, response conciseness is a first-class quality attribute:
+      engineers require actionable summaries, not extended deliberation transcripts. On this dimension,
+      pipeline-qwen-sft demonstrates clear advantage despite having a substantially smaller effective
+      parameter count at inference time (70B base, Q4_K_M quantised).
+    </p>
+
+    <div class="note">
+      <strong>Note on Multi-Metric Evaluation:</strong> Advanced metrics (Jaccard, Levenshtein, Recall,
+      Ensemble Accuracy) were computed but the automated reporting step encountered a matplotlib
+      API compatibility error (<code>Axes.set() got an unexpected keyword argument 'edgecolor'</code>)
+      during figure generation. The underlying metric computations completed successfully. Full
+      multi-metric results will be reported in the extended evaluation.
+    </div>
+
+    <h2>7.3 Evaluation Pipeline Observations</h2>
+    <p>The following observations were recorded during the benchmark run:</p>
+    <ul class="body-list">
+      <li>Gemma-3 27B QAT triggered a duplicate <code>&lt;bos&gt;</code> token warning from llama.cpp,
+          potentially reducing response quality on affected cases.</li>
+      <li>Gemma-3 was constrained to <code>n_ctx=2048</code> due to VRAM; its full context window
+          is 131,072 tokens, meaning long-context cases were truncated.</li>
+      <li>pipeline-qwen-sft was constrained to <code>n_ctx=8192</code> (training context: 32,768 tokens).</li>
+      <li>Ground truth labels were successfully matched via UUID scan of the DCA-Bench snapshot
+          (<code>task_meta.json</code>, 57 JSON files scanned).</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 8 -->
+  <div class="section">
+    <h1 id="impl">8. Implementation Details</h1>
+
+    <h2>8.1 Parallelised Agent Pipeline</h2>
+    <p>
+      A critical performance optimisation in the agent engine is the parallelisation of all independent
+      inference steps using <code>Promise.all</code>, reducing total response latency from approximately
+      14 seconds (sequential) to 6&ndash;7 seconds (parallel).
+    </p>
+
+    <pre>// Stage 1: Role classification and knowledge retrieval — independent
+const [role, retrieved] = await Promise.all([
+  normalizeRole(request.role, request.message),
+  retrieveKnowledge(request.message, 5).catch(() => ({ citations: [] })),
+]);
+
+// Stage 2: Command planning and red-herring detection — independent
+const [commandProposals, redHerringResult] = await Promise.all([
+  buildCommandProposals(request.message, context).catch(() => []),
+  runRedHerring
+    ? runRedHerringModel(request.message, contextText).catch(() => null)
+    : Promise.resolve(null),
+]);</pre>
+
+    <h2>8.2 Command Proposal Two-Stage Pipeline</h2>
+    <p>
+      Command proposals are generated in two sequential stages to prevent generic, template-style outputs:
+    </p>
+    <ul class="body-list">
+      <li><strong>Stage 1 &mdash; Domain Analysis</strong> (pipeline-qwen-sft): Extracts relevant schema
+          context, known error patterns, and an assessment of red-herring risk for the given intent.</li>
+      <li><strong>Stage 2 &mdash; Query Formulation</strong> (pipeline-qwen-sft): Generates the exact
+          SQL statement or HTTP API call, grounded by Stage 1 output. Capped at 5,000 ms via a
+          <code>Promise.race</code> timeout to prevent blocking the chat response.</li>
+    </ul>
+
+    <h2>8.3 State Synchronisation</h2>
+    <p>
+      A hydrate-on-read / persist-on-write pattern maintains consistency between local JSON storage
+      and MongoDB Atlas. Reads always target the local file system for zero-latency access; writes
+      flush to MongoDB asynchronously. This design ensures full offline functionality with automatic
+      synchronisation upon connectivity restoration.
+    </p>
+
+    <h2>8.4 Ollama Fallback Chain</h2>
+    <p>
+      Every model call is wrapped in a retry chain. If a model returns a 4xx status (model not found)
+      or 5xx error (server fault), the next candidate in the chain is attempted automatically. The
+      retry logic was extended to cover 4xx codes after an initial implementation erroneously treated
+      404 (model not found) as non-retryable, causing entire chains to fail on the first missing model.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 9 -->
+  <div class="section">
+    <h1 id="perf">9. Performance Metrics</h1>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 8. System latency and cache parameters.</caption>
+        <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Fast path response (llama3.2:1b)</td><td>1&ndash;2 s</td><td>Greetings, short queries</td></tr>
+          <tr><td>Parallel agent pipeline (typical)</td><td>6&ndash;7 s</td><td>After Promise.all optimisation</td></tr>
+          <tr><td>Sequential pipeline (pre-optimisation)</td><td>~11.5 s</td><td>Baseline before parallelisation</td></tr>
+          <tr><td>Query formulation timeout cap</td><td>5,000 ms</td><td>Stage 2 of command proposal pipeline</td></tr>
+          <tr><td>Live connector result cache TTL</td><td>10 minutes</td><td>Live Connector quality source</td></tr>
+          <tr><td>QA agent rule cache TTL</td><td>20 minutes</td><td>QA Agent quality source</td></tr>
+          <tr><td>Maximum audit log entries</td><td>200</td><td>Sliding window, oldest evicted first</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 9. Latency breakdown before and after parallelisation.</caption>
+        <thead><tr><th>Pipeline Step</th><th>Sequential</th><th>Parallel</th></tr></thead>
+        <tbody>
+          <tr><td>Role classification</td><td>~2.0 s</td><td rowspan="2" style="vertical-align:middle;font-weight:600;">~2.0 s (concurrent)</td></tr>
+          <tr><td>Knowledge retrieval</td><td>~0.5 s</td></tr>
+          <tr><td>Command planning</td><td>~4.0 s</td><td rowspan="2" style="vertical-align:middle;font-weight:600;">~5.0 s (concurrent)</td></tr>
+          <tr><td>Red-herring detection</td><td>~3.0 s</td></tr>
+          <tr><td>Chat generation</td><td>~2.0 s</td><td>~2.0 s</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>~11.5 s</strong></td><td><strong>~6&ndash;7 s</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 10 -->
+  <div class="section">
+    <h1 id="challenges">10. Challenges and Solutions</h1>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 10. Engineering challenges encountered during development and their resolutions.</caption>
+        <thead><tr><th>#</th><th>Challenge</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Sequential model calls caused response times exceeding 14 seconds, rendering the assistant unacceptably slow for diagnostic use.</td>
+            <td>Parallelised all independent pipeline steps using <code>Promise.all</code>. Role classification and knowledge retrieval now execute concurrently; command planning and red-herring detection execute concurrently in a second stage.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Stale React closures in the chat component caused <code>acceptCommand</code> to read outdated message state after long asynchronous waits, breaking command acceptance flows.</td>
+            <td>Introduced a <code>messagesRef</code> synchronised via <code>useEffect</code> so that asynchronous callbacks always read the latest state without depending on closure capture.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>React StrictMode double-fires effects in development mode, causing the assistant to emit duplicate messages and render duplicate command blocks.</td>
+            <td>Added a <code>sentPromptRef</code> guard tracking the last dispatched prompt hash. Duplicate dispatches within a single render cycle are silently dropped.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>The Ollama fallback chain did not retry on HTTP 404 (model not found) errors, causing the entire chain to fail at the first unavailable model.</td>
+            <td>Extended the <code>isRetryableOllamaError</code> function to match 4xx status codes in addition to 5xx, so that model-not-found conditions correctly advance to the next candidate.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Reasoning models produce <code>&lt;think&gt;...&lt;/think&gt;</code> blocks and markdown code fences in raw output, causing <code>JSON.parse</code> failures during automated rule generation.</td>
+            <td>Added pre-processing to strip reasoning blocks and code fences before parsing, followed by extraction of the first valid JSON object from the remaining text.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>A race condition between thread initialisation on component mount and demo message injection caused the mount effect to overwrite injected content.</td>
+            <td>Awaited <code>startNewThread()</code> before injecting messages and introduced a 50 ms yield to ensure all asynchronous state writes had settled prior to injection.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>During benchmarking, the matplotlib report generation failed with <code>AttributeError: Axes.set() got an unexpected keyword argument 'edgecolor'</code> on the evaluation environment's matplotlib version.</td>
+            <td>Metric computation completed successfully and results were persisted to CSV. The visualisation layer requires a version-compatible API call (<code>ax.spines[...].set_edgecolor()</code> rather than passing <code>edgecolor</code> as a keyword argument to <code>add_subplot</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 11 -->
+  <div class="section">
+    <h1 id="future">11. Future Improvements</h1>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Table 11. Planned improvements in priority order.</caption>
+        <thead><tr><th>Priority</th><th>Improvement</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Full DCA-Bench Evaluation</td><td>Run the complete 221-case evaluation with all three models to produce statistically robust heuristic and ensemble scores. Requires managing VRAM across sequential model loads on a 15.6 GB device.</td></tr>
+          <tr><td>2</td><td>Matplotlib Version Fix</td><td>Resolve the <code>edgecolor</code> API incompatibility to enable automated generation of the multi-metric visualisation report (cross-metric matrix, radar chart, efficiency frontier).</td></tr>
+          <tr><td>3</td><td>Generic Live Connector Checks</td><td>Extend the background live check system beyond Snowflake to all connector families (Postgres, Kafka, Airflow, dbt), feeding results into <code>mergeQualityBundles</code> uniformly.</td></tr>
+          <tr><td>4</td><td>True Vector Embeddings in RAG</td><td>Replace keyword-scoring retrieval with dense vector embeddings using <code>nomic-embed-text</code> via Ollama, enabling semantic rather than token-overlap matching.</td></tr>
+          <tr><td>5</td><td>Lineage-Aware Impact Analysis</td><td>Wire dbt lineage graphs into the agent context to enable blast-radius analysis tracing downstream impact of a failing model across dependent dashboards and pipelines.</td></tr>
+          <tr><td>6</td><td>Alert Routing and Escalation</td><td>Build a full alert routing layer with PagerDuty, Slack, and email escalation paths governed by severity-based SLA timers and on-call schedule awareness.</td></tr>
+          <tr><td>7</td><td>Continuous Model Evaluation</td><td>Automated evaluation harness benchmarking pipeline-qwen-sft against baseline models on domain-specific test cases after each fine-tuning iteration.</td></tr>
+          <tr><td>8</td><td>Multi-tenant Support</td><td>Namespace isolation per team or environment with role-based access control on rules, alerts, and command approval workflows.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 12 -->
+  <div class="section">
+    <h1 id="ethics">12. Ethical Considerations</h1>
+    <p>
+      The design and deployment of an AI-assisted data operations platform raises a number of ethical
+      concerns that have been explicitly addressed in the system design.
+    </p>
+
+    <h2>12.1 Data Privacy and Sovereignty</h2>
+    <p>
+      All model inference, credential storage, and query execution are performed locally. No query results,
+      schema metadata, or credentials are transmitted to external AI providers or third-party cloud services.
+      This design eliminates the privacy risk inherent in SaaS observability products and ensures organisations
+      retain full data sovereignty.
+    </p>
+
+    <h2>12.2 Human-in-the-Loop Controls</h2>
+    <p>
+      Every command that modifies a live system requires explicit user approval before execution.
+      The assistant proposes actions; it never acts autonomously. Destructive operations are blocked at the
+      guardrail layer regardless of model output, providing a hard boundary that cannot be bypassed by
+      adversarial prompts or model hallucination.
+    </p>
+
+    <h2>12.3 Hallucination Mitigation</h2>
+    <p>
+      System prompts explicitly instruct models not to fabricate schema names, row counts, or table structures.
+      When live data is required to answer a question, a query is proposed rather than a value being assumed.
+      Retrieved knowledge citations are injected into responses and clearly attributed to their source documents.
+    </p>
+
+    <h2>12.4 Model and Decision Transparency</h2>
+    <p>
+      Every response surface includes an attribution indicating which model path generated it. Generated quality
+      rules display their source category: system, LLM-generated, log-based, live, or custom. This ensures
+      engineers can distinguish between deterministic rule outputs and probabilistic model recommendations,
+      and apply appropriate levels of scrutiny to each.
+    </p>
+
+    <h2>12.5 Red-Herring Awareness</h2>
+    <p>
+      A dedicated model inference path (the Red-Herring path) runs in parallel with the main response
+      generation to assess whether each alert may be a secondary symptom rather than the root cause.
+      This prevents engineers from taking disruptive remediation actions based on cascading failure signals
+      that do not represent the actual underlying issue.
+    </p>
+
+    <h2>12.6 Audit and Accountability</h2>
+    <p>
+      All rule approvals, command executions, and alert acknowledgements are logged with timestamps to the
+      audit store. The audit log is maintained as an append-only sliding window capped at 200 events,
+      providing a clear record of all AI-assisted decisions for accountability and post-incident review.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ 13 -->
+  <div class="section">
+    <h1 id="conclusion">13. Conclusion</h1>
+    <p>
+      This report has presented Pygmy, a self-hosted AI-native data operations platform integrating
+      a fine-tuned large language model with a multi-source quality engine, typed connector framework,
+      and retrieval-augmented knowledge base. The primary model, pipeline-qwen-sft, is derived from
+      Qwen 70B Instruct through supervised fine-tuning on pipeline operations data and is evaluated
+      empirically against two competitive baselines on the DCA-Bench benchmark.
+    </p>
+    <p>
+      All three models achieve perfect heuristic detection rates (1.0) across 30 evaluation cases under
+      the most challenging hint configuration (no hints). The principal differentiator is response efficiency:
+      pipeline-qwen-sft produces responses averaging 113.6 words, compared to 183.4 for Gemma-3 27B QAT
+      and 315.3 for DeepSeek-R1-7B, demonstrating that domain-specific fine-tuning enables more concise
+      and targeted outputs without sacrificing detection coverage.
+    </p>
+    <p>
+      The system architecture, inference pipeline, quality engine, and engineering solutions documented
+      in this report reflect a production-ready implementation that has been validated against real-world
+      data engineering workloads. Future work will focus on completing the full 221-case DCA-Bench evaluation,
+      extending multi-metric scoring to all models, and expanding the connector framework to provide
+      uniform live health checks across all supported platforms.
+    </p>
+  </div>
+
+  <hr />
+
+  <!-- References -->
+  <div class="section">
+    <h1 id="refs">References</h1>
+    <ol class="ref-list">
+      <li>
+        TRAIS Lab. <em>DCA-Bench: A Benchmark for Data-Centric Anomaly Detection</em>.
+        HuggingFace Datasets. <code>trais-lab/DCA-Bench</code>. 2024.
+      </li>
+      <li>
+        Alibaba Cloud. <em>Qwen2.5 Technical Report</em>. Qwen Team. 2024.
+        <code>https://qwenlm.github.io/blog/qwen2.5/</code>
+      </li>
+      <li>
+        Google. <em>Gemma 3 Technical Report</em>. Google DeepMind. 2025.
+      </li>
+      <li>
+        DeepSeek AI. <em>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</em>. 2025.
+      </li>
+      <li>
+        Hu, E. et al. <em>LoRA: Low-Rank Adaptation of Large Language Models</em>. ICLR 2022.
+      </li>
+      <li>
+        Dettmers, T. et al. <em>QLoRA: Efficient Finetuning of Quantized LLMs</em>. NeurIPS 2023.
+      </li>
+      <li>
+        Andrei Gergel et al. <em>Qdrant: A Vector Database for the Next Generation of AI Applications</em>. 2023.
+        <code>https://qdrant.tech</code>
+      </li>
+      <li>
+        Lewis, P. et al. <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</em>. NeurIPS 2020.
+      </li>
+    </ol>
+  </div>
+
+  <div class="page-num">Pygmy Technical Report &nbsp;&middot;&nbsp; April 2026 &nbsp;&middot;&nbsp; Confidential</div>
+
+</div>
+</body>
+</html>

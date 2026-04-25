@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg: #f5f7ff;
+  --bg-muted: #eef2ff;
+  --panel: rgba(255, 255, 255, 0.76);
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --line: rgba(93, 105, 160, 0.18);
+  --line-strong: rgba(76, 89, 145, 0.28);
+  --text: #151828;
+  --muted: #66708f;
+  --sidebar: #171a2a;
+  --accent: #6c72ff;
+  --accent-soft: #e6e8ff;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(137, 145, 255, 0.16), transparent 24%),
+    radial-gradient(circle at top right, rgba(114, 214, 255, 0.12), transparent 22%),
+    linear-gradient(180deg, #f8faff 0%, #f2f5ff 100%);
+  color: var(--text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: inherit;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+  vertical-align: middle;
+  user-select: none;
+}

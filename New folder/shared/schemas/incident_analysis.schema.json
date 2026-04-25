@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IncidentAnalysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "likely_root_cause",
+    "supporting_evidence",
+    "suggested_fix",
+    "debug_steps",
+    "confidence",
+    "recommended_actions"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "likely_root_cause": {
+      "type": "string"
+    },
+    "supporting_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "suggested_fix": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "debug_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "label", "safe"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["retry_job", "run_validation", "create_ticket", "notify_owner"]
+          },
+          "label": {
+            "type": "string"
+          },
+          "safe": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

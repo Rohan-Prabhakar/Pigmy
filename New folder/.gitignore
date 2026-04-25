@@ -1,0 +1,54 @@
+# ── Next.js ──
+.next/
+out/
+
+# ── Node ──
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Local data & secrets ──
+.pipeline-ops/
+.env
+.env.*
+!.env.example
+
+# ── Python / Jupyter ──
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+
+# ── Model files ──
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.pkl
+*.ckpt
+
+# ── Large CSVs / data ──
+dca_full_comparison.csv
+dca_benchmark_report.png
+dca_advanced_metrics_report.png
+*.parquet
+*.arrow
+
+# ── OS / editor ──
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Heavy local model data ──
+ollama/
+llama.cpp/
+sft_model/
+
+# ── Puppeteer (auto-downloaded Chromium) ──
+.local-chromium/
