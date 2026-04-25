@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pygmy — AI-Native Data Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #060810;
+      --surface:  #0d1117;
+      --border:   rgba(255,255,255,0.07);
+      --text:     #f0f4ff;
+      --muted:    #64748b;
+      --dim:      #1e293b;
+      --indigo:   #6366f1;
+      --indigo2:  #818cf8;
+      --cyan:     #22d3ee;
+      --emerald:  #34d399;
+      --violet:   #a78bfa;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 56px;
+      background: rgba(6,8,16,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+    .nav-logo span { color: var(--indigo2); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-link.primary {
+      color: #fff;
+      background: var(--indigo);
+      border-color: rgba(99,102,241,0.5);
+    }
+    .nav-link.primary:hover { background: #5558e8; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* radial glow */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse at center, rgba(99,102,241,0.13) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.25);
+      color: var(--indigo2);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      border-radius: 99px;
+      padding: 4px 14px;
+      margin-bottom: 28px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--indigo2);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 20px;
+      max-width: 800px;
+    }
+    h1 .grad {
+      background: linear-gradient(135deg, var(--indigo2) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.65;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 64px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--indigo);
+      color: #fff;
+      border: 1px solid rgba(99,102,241,0.4);
+    }
+    .btn-primary:hover { background: #5558e8; transform: translateY(-1px); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.09); transform: translateY(-1px); }
+
+    /* ── STAT ROW ── */
+    .stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .stat-label { font-size: 11.5px; color: var(--muted); }
+
+    /* ── SECTION ── */
+    section {
+      padding: 80px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--indigo2);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 40px;
+      line-height: 1.65;
+    }
+
+    /* ── FEATURE GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: rgba(99,102,241,0.35); }
+    .card-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── ARCH DIAGRAM ── */
+    .arch {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-top: 32px;
+    }
+    .arch-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: background 0.15s;
+    }
+    .arch-row:hover { background: rgba(255,255,255,0.03); }
+    .arch-tag {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      min-width: 88px;
+      padding-right: 14px;
+      border-right: 1px solid var(--border);
+    }
+    .arch-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .arch-arrow {
+      text-align: left;
+      padding-left: 102px;
+      font-size: 11px;
+      color: var(--dim);
+      margin-bottom: 2px;
+    }
+
+    /* ── BENCHMARK ── */
+    .bench-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 13.5px;
+    }
+    .bench-table th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .bench-table td {
+      padding: 13px 16px;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .bench-table tr:last-child td { border-bottom: none; }
+    .bench-table tr.highlight td { color: #fff; }
+    .bench-table .tag {
+      display: inline-block;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      color: var(--indigo2);
+      border-radius: 4px;
+      padding: 1px 7px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+    .bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bar {
+      height: 6px;
+      border-radius: 99px;
+      background: rgba(99,102,241,0.25);
+      flex-shrink: 0;
+    }
+    .bar.best { background: var(--indigo2); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-logo { font-size: 14px; font-weight: 700; color: var(--muted); letter-spacing: -0.02em; }
+    .footer-meta { font-size: 12px; color: var(--dim); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-link {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--text); }
+
+    /* ── SVG icons ── */
+    svg { display: inline-block; vertical-align: middle; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Pyg<span>my</span></div>
+  <div class="nav-links">
+    <a class="nav-link" href="https://github.com/Rohan-Prabhakar/Pigmy" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      GitHub
+    </a>
+    <a class="nav-link primary" href="pygmy-technical-docs.pdf" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Documentation
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge"><span class="badge-dot"></span> pipeline-qwen-sft · Qwen 70B Instruct</div>
+  <h1>AI-Native<br><span class="grad">Data Operations</span></h1>
+  <p class="hero-sub">
+    Self-hosted pipeline observability, quality rule management, and conversational data engineering assistance — nothing leaves your machine.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://github.com/Rohan-Prabhakar/Pigmy" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      View on GitHub
+    </a>
+    <a class="btn btn-secondary" href="pygmy-technical-docs.pdf" target="_blank">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Read the Docs
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-value">1.000</div><div class="stat-label">Detection rate on DCA-Bench</div></div>
+    <div class="stat"><div class="stat-value">6–7s</div><div class="stat-label">Parallel pipeline latency</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Quality rule sources</div></div>
+    <div class="stat"><div class="stat-value">8</div><div class="stat-label">Connector integrations</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-label">Platform</div>
+  <h2 class="section-title">Everything in one place</h2>
+  <p class="section-sub">A unified interface across your entire data stack — from Snowflake to Kafka, without touching a third-party AI service.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(99,102,241,0.12)">🤖</div>
+      <h3>AI Assistant</h3>
+      <p>Conversational interface with role-aware responses, command proposals, and red-herring detection to separate root causes from cascading symptoms.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(6,182,212,0.12)">📋</div>
+      <h3>Quality Engine</h3>
+      <p>Five independent rule sources — system tests, live connector results, LLM-generated rules, log patterns, and watchdog alerts — merged at query time.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(16,185,129,0.12)">🔌</div>
+      <h3>Connector Framework</h3>
+      <p>Typed executors for Snowflake, PostgreSQL, Kafka, S3, Looker, Airflow, dbt, and Fivetran. Mutations are approval-gated — the assistant never acts unilaterally.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(139,92,246,0.12)">🧠</div>
+      <h3>Fine-Tuned Model</h3>
+      <p>pipeline-qwen-sft — Qwen 70B Instruct fine-tuned on pipeline failure patterns, dbt lineage errors, and red-herring incident reports.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(245,158,11,0.12)">🔍</div>
+      <h3>RAG Knowledge Base</h3>
+      <p>Qdrant Cloud vector store with hybrid retrieval. Relevant documentation is injected into every response as cited, grounded context.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(244,63,94,0.12)">🔒</div>
+      <h3>Self-Hosted</h3>
+      <p>All inference, credentials, and query results stay on your machine. No data is transmitted to external AI providers — ever.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section>
+  <div class="section-label">Architecture</div>
+  <h2 class="section-title">Six-layer design</h2>
+  <p class="section-sub">Each layer has a clearly bounded responsibility. Requests flow top-to-bottom; quality signals flow bottom-up.</p>
+
+  <div class="arch">
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#818cf8">Frontend</span>
+      <div class="arch-chips">
+        <span class="chip">Connections</span><span class="chip">Overview</span><span class="chip">Rules</span><span class="chip">Alerts</span><span class="chip">Assistant</span><span class="chip">Settings</span>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#a78bfa">API Layer</span>
+      <div class="arch-chips">
+        <span class="chip">agent/chat</span><span class="chip">quality/rules</span><span class="chip">execute</span><span class="chip">connections</span><span class="chip">knowledge</span>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#22d3ee">Agent Engine</span>
+      <div class="arch-chips">
+        <span class="chip">Role Classifier</span><span class="chip">Knowledge Retrieval</span><span class="chip">Command Planner</span><span class="chip">Red-Herring Detector</span><span class="chip">pipeline-qwen-sft</span><span class="chip">llama3.2:1b</span>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#34d399">Quality Engine</span>
+      <div class="arch-chips">
+        <span class="chip">System Tests</span><span class="chip">Live Connector</span><span class="chip">QA Agent</span><span class="chip">Log Monitor</span><span class="chip">Watchdog</span>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#475569">Persistence</span>
+      <div class="arch-chips">
+        <span class="chip">Local JSON</span><span class="chip">MongoDB Atlas</span><span class="chip">Qdrant Cloud</span>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <span class="arch-tag" style="color:#475569">Connectors</span>
+      <div class="arch-chips">
+        <span class="chip">Snowflake</span><span class="chip">dbt</span><span class="chip">Looker</span><span class="chip">Airflow</span><span class="chip">Fivetran</span><span class="chip">Kafka</span><span class="chip">PostgreSQL</span><span class="chip">S3/GCS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENCHMARK -->
+<section>
+  <div class="section-label">Evaluation</div>
+  <h2 class="section-title">DCA-Bench results</h2>
+  <p class="section-sub">Evaluated against two competitive baselines on the DCA-Bench anomaly detection benchmark — 30 cases, no hints, 450-token limit.</p>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <table class="bench-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Detection Rate</th>
+          <th>Avg. Response Length</th>
+          <th>Efficiency</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td><strong>pipeline-qwen-sft</strong> <span class="tag">Ours</span></td>
+          <td>1.000</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar best" style="width:52px"></div>
+              113.6 words
+            </div>
+          </td>
+          <td style="color:#34d399">Best</td>
+        </tr>
+        <tr>
+          <td>Gemma-3 27B QAT</td>
+          <td>1.000</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar" style="width:84px"></div>
+              183.4 words
+            </div>
+          </td>
+          <td>1.6× longer</td>
+        </tr>
+        <tr>
+          <td>DeepSeek-R1-Distill-Qwen-7B</td>
+          <td>1.000</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar" style="width:144px"></div>
+              315.3 words
+            </div>
+          </td>
+          <td>2.8× longer</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:10px;">
+    All models achieve perfect heuristic detection. pipeline-qwen-sft produces the most concise outputs, demonstrating that domain-specific fine-tuning enables targeted responses without sacrificing coverage.
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Pygmy</div>
+    <div class="footer-meta" style="margin-top:4px;">Student ID: 002309778 &nbsp;·&nbsp; April 2026</div>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/Rohan-Prabhakar/Pigmy" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      GitHub
+    </a>
+    <a class="footer-link" href="pygmy-technical-docs.pdf" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Documentation
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>
