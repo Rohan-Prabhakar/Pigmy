@@ -75,6 +75,9 @@ function createRule(
   evidence: string[]
 ): QualityRule {
   const timestamp = snapshot.metadataSyncedAt ?? new Date().toISOString();
+  const normalizedEvidence = evidence.map((entry) =>
+    entry.replace(/^Best-practice basis:\s*/i, "").trim()
+  );
   return {
     ruleId: `system-${snapshot.connectionId}-${suffix}`,
     title,
@@ -87,10 +90,10 @@ function createRule(
     generatedDsl,
     draft: {
       assumptions: [
-        "This system rule is generated from adapter snapshots and official metadata surfaces.",
-        "The rule remains read-only and should be refined when live connector execution is available.",
+        "This rule is built from connector metadata and operational surfaces.",
+        "Execution remains read-only.",
       ],
-      evidence,
+      evidence: normalizedEvidence,
       generatedSql: typeof generatedDsl.commandPreview === "string" ? generatedDsl.commandPreview : undefined,
     },
     citations,
@@ -1653,7 +1656,7 @@ function buildDiscoveredAuthRequiredChecks(snapshot: AdapterSnapshot): QualityRu
         ? "https://docs.snowflake.com/en/sql-reference/account-usage/query_history"
         : "workspace://pipeline-detection",
       `${snapshot.tool} discovered downstream dependency`,
-      `${node.tool} was inferred from upstream metadata and still needs direct authentication before live inspection.`
+      `${node.tool} was identified from upstream metadata and still needs direct authentication before live inspection.`
     );
 
     const baseRule = createRule(

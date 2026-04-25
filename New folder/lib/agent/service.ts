@@ -216,52 +216,6 @@ function buildRemedyHint(message: string) {
   ].join("\n");
 }
 
-// DEMO: canned Looker viz answer — reflects what live Looker creds would return
-async function buildLookerVizAnswer(message: string): Promise<string | null> {
-  if (!/looker/i.test(message)) return null;
-
-  // Cross-viz regional income + population trend query
-  if (/region|highest|median income|population trend|compare/i.test(message)) {
-    await new Promise<void>((resolve) =>
-      setTimeout(resolve, 11_000 + Math.random() * 4_000)
-    );
-
-    return [
-      "Looker query across 2 tiles — Population Analytics dashboard",
-      "",
-      "Median Income by Region  (Bar chart · tile_id: 2)",
-      "  Rural        $3,998,200   ← highest",
-      "  Semi-Urban   $3,321,400",
-      "  Urban        $3,054,800",
-      "  Suburban     $2,981,600",
-      "",
-      "Population Count trend  (Line chart · tile_id: 1)",
-      "  Workspace total   81,473,054",
-      "  Avg age           55.28",
-      "  Notable spike     Mar 2026 → ~2.05M single-period count",
-      "  Baseline range    Apr 2025 – Feb 2026  ·  200K – 1.1M per period",
-      "",
-      "Cross-tile insight",
-      "Rural leads on median income by ~20% over the next tier. The Mar 2026 population spike aligns with a Rural intake event — likely a census batch load — which temporarily inflates the per-period count without shifting the long-run income distribution.",
-    ].join("\n");
-  }
-
-  // Simple viz count query
-  if (/viz|visualization|visuali|chart|how many|types/i.test(message)) {
-    await new Promise<void>((resolve) => setTimeout(resolve, 10_500));
-
-    return [
-      "Looker workspace — 3 visualisations across 2 dashboards",
-      "",
-      "Visualisation breakdown",
-      "1. Population Count Over Time  ·  Line chart  ·  Dashboard: Population Analytics",
-      "2. Median Income by Region  ·  Bar chart  ·  Dashboard: Population Analytics",
-      "3. Age Distribution  ·  Histogram  ·  Dashboard: Demographics Overview",
-    ].join("\n");
-  }
-
-  return null;
-}
 
 function buildDeterministicAlertAnswer(message: string) {
   const snapshotAgeMatch = message.match(/Latest snapshot age:\s*(\d+)\s*minutes/i);
@@ -429,9 +383,7 @@ export async function handleAgentChat(
   try {
     let message: string;
     let chatModel: string;
-    const deterministicAnswer =
-      (await buildLookerVizAnswer(request.message)) ??
-      buildDeterministicAlertAnswer(request.message);
+    const deterministicAnswer = buildDeterministicAlertAnswer(request.message);
 
     if (deterministicAnswer) {
       message = deterministicAnswer;

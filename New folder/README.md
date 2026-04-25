@@ -43,6 +43,7 @@ Connectors       →   Snowflake · dbt · Looker · Airflow · Fivetran · Kafk
 | Local State | JSON files in `.pipeline-ops/` |
 | Model Runtime | Ollama (`localhost:11434`) + custom model service (`localhost:8000`) |
 
+get sft model from here: https://huggingface.co/Rohan1103/sft_pipeline_ops/tree/main/sft_model
 ---
 
 ## Getting Started
