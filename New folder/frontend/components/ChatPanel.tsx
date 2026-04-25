@@ -33,7 +33,7 @@ export function ChatPanel({ incidentId }: { incidentId: string }) {
         <textarea
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
-          placeholder="Why did this pipeline fail and what should I validate first?"
+          placeholder="Ask a question"
           style={{
             width: "100%",
             minHeight: 110,

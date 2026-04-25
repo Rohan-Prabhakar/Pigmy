@@ -113,8 +113,8 @@ function RuleComposerModal({
             className="mt-4 min-h-[120px] w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none disabled:opacity-50"
             placeholder={
               ruleMode === "statement"
-                ? "Example: Flag when refresh duration exceeds 20 minutes or row count drops by more than 30%."
-                : "Describe the rule in plain English, e.g. Flag when Snowflake row count drops more than 20% vs yesterday."
+                ? "Write the rule statement"
+                : "Describe the rule"
             }
             value={rulePrompt}
             onChange={(e) => setRulePrompt(e.target.value)}
@@ -219,7 +219,7 @@ function ruleCommandPreview(rule?: QualityRule) {
     (rule?.generatedDsl.commandPreview as string | undefined) ??
     rule?.draft.generatedSql ??
     rule?.draft.generatedScript ??
-    "No command preview available"
+    "Command preview unavailable"
   );
 }
 

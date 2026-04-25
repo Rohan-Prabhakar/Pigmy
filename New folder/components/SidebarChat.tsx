@@ -333,7 +333,7 @@ export function SidebarChat({
     const res  = await fetch("/api/assistant/threads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ create: true, title: "New thread", selectedConnectionId: activeConnection?.connectionId }),
+      body: JSON.stringify({ create: true, title: "Untitled", selectedConnectionId: activeConnection?.connectionId }),
     });
     const data = (await res.json()) as { thread: AssistantThread };
     setThreadId(data.thread.threadId);
@@ -537,9 +537,9 @@ export function SidebarChat({
             <div className="flex h-full items-center justify-center">
               <div className="max-w-sm text-center">
                 <span className="material-symbols-rounded text-[40px] text-slate-300">support_agent</span>
-                <p className="mt-3 text-sm font-medium text-slate-800">Ask anything about your stack</p>
+                <p className="mt-3 text-sm font-medium text-slate-800">Start a conversation</p>
                 <p className="mt-1.5 text-sm text-slate-400">
-                  Diagnose failures, explain root causes, propose safe next steps.
+                  Messages, results, and approvals will appear here.
                 </p>
               </div>
             </div>
@@ -611,7 +611,7 @@ export function SidebarChat({
               ref={textareaRef}
               rows={1}
               className="max-h-24 min-h-[34px] w-full resize-none bg-transparent px-1 pt-1 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400"
-              placeholder="Ask anything about your stack…"
+              placeholder="Send a message"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {

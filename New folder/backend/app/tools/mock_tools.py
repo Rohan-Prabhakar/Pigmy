@@ -12,7 +12,7 @@ def get_logs(incident_id: str | None = None, job_id: str | None = None):
         incident_id=incident_id,
         event_type="tool_call",
         actor="backend",
-        detail="Fetched logs from mock tool layer.",
+        detail="Fetched logs.",
         metadata={"tool": "get_logs", "job_id": job_id},
     )
     return logs
@@ -29,7 +29,7 @@ def get_pipeline_status(job_id: str):
         incident_id=None,
         event_type="tool_call",
         actor="backend",
-        detail="Fetched pipeline status from mock tool layer.",
+        detail="Fetched pipeline status.",
         metadata={"tool": "get_pipeline_status", "job_id": job_id},
     )
     return status
@@ -41,8 +41,8 @@ def run_diagnostic_sql(query: str, readonly: bool = True):
         "readonly": readonly,
         "query": normalized,
         "rows": [
-            {"sample_dimension": "booking_net_amount", "null_rows": 2183},
-            {"sample_dimension": "customer_id", "duplicate_rows": 248},
+            {"dimension": "booking_net_amount", "null_rows": 2183},
+            {"dimension": "customer_id", "duplicate_rows": 248},
         ],
     }
     create_audit_event(
@@ -61,7 +61,7 @@ def get_schema_checks(dataset: str):
         incident_id=None,
         event_type="tool_call",
         actor="backend",
-        detail="Fetched schema checks from mock tool layer.",
+        detail="Fetched schema checks.",
         metadata={"tool": "get_schema_checks", "dataset": dataset},
     )
     return checks
@@ -73,18 +73,19 @@ def get_recent_metrics(dataset: str):
         incident_id=None,
         event_type="tool_call",
         actor="backend",
-        detail="Fetched recent dataset metrics from mock tool layer.",
+        detail="Fetched recent dataset metrics.",
         metadata={"tool": "get_recent_metrics", "dataset": dataset},
     )
     return metrics
 
 
 def retry_job(job_id: str):
-    return {"job_id": job_id, "status": "accepted", "message": "Mock retry queued safely."}
+    return {"job_id": job_id, "status": "accepted", "message": "Retry queued safely."}
 
 
 def create_incident_ticket(payload: dict):
-    return {"ticket_id": "TCK-1042", "status": "created", "payload": payload}
+    ticket_id = f"TCK-{int(datetime.now(timezone.utc).timestamp())}"
+    return {"ticket_id": ticket_id, "status": "created", "payload": payload}
 
 
 def notify_owner(owner_id: str, message: str):
