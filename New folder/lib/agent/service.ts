@@ -216,7 +216,7 @@ function buildRemedyHint(message: string) {
   ].join("\n");
 }
 
-// Looker viz answer — reflects what live Looker creds would return
+// DEMO: canned Looker viz answer — reflects what live Looker creds would return
 async function buildLookerVizAnswer(message: string): Promise<string | null> {
   if (!/looker/i.test(message)) return null;
 
