@@ -191,8 +191,6 @@ public/
   architecture.html     System architecture diagram
   docs.html             Technical documentation
   pygmy-technical-docs.pdf
-scripts/
-  generate-pdf.mjs      Puppeteer PDF generation
 ```
 
 ---
@@ -208,6 +206,8 @@ The following are excluded due to size:
 | `sft_model/` | ~653 MB | Fine-tuned model weights |
 | `node_modules/` | — | Install via `npm install` |
 | `.pipeline-ops/` | — | Local runtime state and credentials |
+
+get sft model from here: https://huggingface.co/Rohan1103/sft_pipeline_ops/tree/main/sft_model
 
 ---
 
